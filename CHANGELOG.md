@@ -2,6 +2,9 @@
 
 The release log for BoTorch.
 
+## Unreleased
+* Add `q_reduction` keyword for acquisition function classes that inherit from `SampleReducingMCAcquisitionFunction`, and change the default value of that keyword for q-expected improvement-based acquisition functions (tba)
+
 ## [0.11.0] -- May 1, 2024
 
 #### Compatibility
