@@ -88,6 +88,7 @@ class LogImprovementMCAcquisitionFunction(SampleReducingMCAcquisitionFunction):
         eta: Union[Tensor, float] = 1e-3,
         fat: bool = True,
         tau_max: float = TAU_MAX,
+        q_reduction: Optional[Callable[[Tensor, int], Tensor]] = None,
     ) -> None:
         r"""
         Args:
@@ -114,6 +115,10 @@ class LogImprovementMCAcquisitionFunction(SampleReducingMCAcquisitionFunction):
                 approximation to the ReLU.
             tau_max: Temperature parameter controlling the sharpness of the
                 approximation to the `max` operator over the `q` candidate points.
+            q_reduction: A callable that takes in a `sample_shape x batch_shape x q`
+                Tensor of acquisition utility values, a keyword-argument `dim` that
+                specifies the q dimension to reduce over (i.e. -1), and returns a
+                `sample_shape x batch_shape`-dim Tensor of acquisition values.
         """
         if isinstance(objective, ConstrainedMCObjective):
             raise BotorchError(
@@ -121,7 +126,8 @@ class LogImprovementMCAcquisitionFunction(SampleReducingMCAcquisitionFunction):
                 "Please pass the `constraints` directly to the constructor of the "
                 "acquisition function."
             )
-        q_reduction = partial(fatmax if fat else smooth_amax, tau=tau_max)
+        if q_reduction is None:
+            q_reduction = partial(fatmax if fat else smooth_amax, tau=tau_max)
         super().__init__(
             model=model,
             sampler=sampler,

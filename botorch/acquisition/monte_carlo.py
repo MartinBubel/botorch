@@ -360,6 +360,7 @@ class qExpectedImprovement(SampleReducingMCAcquisitionFunction):
         X_pending: Optional[Tensor] = None,
         constraints: Optional[List[Callable[[Tensor], Tensor]]] = None,
         eta: Union[Tensor, float] = 1e-3,
+        q_reduction: Optional[Callable[[Tensor, int], Tensor]] = torch.prod,
     ) -> None:
         r"""q-Expected Improvement.
 
@@ -386,6 +387,10 @@ class qExpectedImprovement(SampleReducingMCAcquisitionFunction):
             eta: Temperature parameter(s) governing the smoothness of the sigmoid
                 approximation to the constraint indicators. For more details, on this
                 parameter, see the docs of `compute_smoothed_feasibility_indicator`.
+            q_reduction: A callable that takes in a `sample_shape x batch_shape x q`
+                Tensor of acquisition utility values, a keyword-argument `dim` that
+                specifies the q dimension to reduce over (i.e. -1), and returns a
+                `sample_shape x batch_shape`-dim Tensor of acquisition values.
         """
         super().__init__(
             model=model,
@@ -393,6 +398,7 @@ class qExpectedImprovement(SampleReducingMCAcquisitionFunction):
             objective=objective,
             posterior_transform=posterior_transform,
             X_pending=X_pending,
+            q_reduction=q_reduction,
             constraints=constraints,
             eta=eta,
         )
@@ -443,6 +449,7 @@ class qNoisyExpectedImprovement(
         constraints: Optional[List[Callable[[Tensor], Tensor]]] = None,
         eta: Union[Tensor, float] = 1e-3,
         marginalize_dim: Optional[int] = None,
+        q_reduction: Optional[Callable[[Tensor, int], Tensor]] = torch.prod,
     ) -> None:
         r"""q-Noisy Expected Improvement.
 
@@ -478,6 +485,10 @@ class qNoisyExpectedImprovement(
                 approximation to the constraint indicators. For more details, on this
                 parameter, see the docs of `compute_smoothed_feasibility_indicator`.
             marginalize_dim: The dimension to marginalize over.
+            q_reduction: A callable that takes in a `sample_shape x batch_shape x q`
+                Tensor of acquisition utility values, a keyword-argument `dim` that
+                specifies the q dimension to reduce over (i.e. -1), and returns a
+                `sample_shape x batch_shape`-dim Tensor of acquisition values.
 
         TODO: similar to qNEHVI, when we are using sequential greedy candidate
         selection, we could incorporate pending points X_baseline and compute
@@ -492,6 +503,7 @@ class qNoisyExpectedImprovement(
             X_pending=X_pending,
             constraints=constraints,
             eta=eta,
+            q_reduction=q_reduction,
         )
         CachedCholeskyMCSamplerMixin.__init__(
             self, model=model, cache_root=cache_root, sampler=sampler
@@ -666,6 +678,7 @@ class qProbabilityOfImprovement(SampleReducingMCAcquisitionFunction):
         tau: float = 1e-3,
         constraints: Optional[List[Callable[[Tensor], Tensor]]] = None,
         eta: Union[Tensor, float] = 1e-3,
+        q_reduction: Optional[Callable[[Tensor, int], Tensor]] = None,
     ) -> None:
         r"""q-Probability of Improvement.
 
@@ -695,6 +708,10 @@ class qProbabilityOfImprovement(SampleReducingMCAcquisitionFunction):
             eta: Temperature parameter(s) governing the smoothness of the sigmoid
                 approximation to the constraint indicators. For more details, on this
                 parameter, see the docs of `compute_smoothed_feasibility_indicator`.
+            q_reduction: A callable that takes in a `sample_shape x batch_shape x q`
+                Tensor of acquisition utility values, a keyword-argument `dim` that
+                specifies the q dimension to reduce over (i.e. -1), and returns a
+                `sample_shape x batch_shape`-dim Tensor of acquisition values.
         """
         super().__init__(
             model=model,
@@ -702,6 +719,7 @@ class qProbabilityOfImprovement(SampleReducingMCAcquisitionFunction):
             objective=objective,
             posterior_transform=posterior_transform,
             X_pending=X_pending,
+            q_reduction=q_reduction,
             constraints=constraints,
             eta=eta,
         )
@@ -754,6 +772,7 @@ class qSimpleRegret(SampleReducingMCAcquisitionFunction):
         objective: Optional[MCAcquisitionObjective] = None,
         posterior_transform: Optional[PosteriorTransform] = None,
         X_pending: Optional[Tensor] = None,
+        q_reduction: Optional[Callable[[Tensor, int], Tensor]] = torch.prod,
     ) -> None:
         r"""q-Simple Regret.
 
@@ -768,6 +787,10 @@ class qSimpleRegret(SampleReducingMCAcquisitionFunction):
                 points that have been submitted for function evaluation
                 but have not yet been evaluated.  Concatenated into X upon
                 forward call.  Copied and set to have no gradient.
+            q_reduction: A callable that takes in a `sample_shape x batch_shape x q`
+                Tensor of acquisition utility values, a keyword-argument `dim` that
+                specifies the q dimension to reduce over (i.e. -1), and returns a
+                `sample_shape x batch_shape`-dim Tensor of acquisition values.
         """
         super().__init__(
             model=model,
@@ -775,6 +798,7 @@ class qSimpleRegret(SampleReducingMCAcquisitionFunction):
             objective=objective,
             posterior_transform=posterior_transform,
             X_pending=X_pending,
+            q_reduction=q_reduction,
         )
 
     def _sample_forward(self, obj: Tensor) -> Tensor:
@@ -824,6 +848,7 @@ class qUpperConfidenceBound(SampleReducingMCAcquisitionFunction):
         objective: Optional[MCAcquisitionObjective] = None,
         posterior_transform: Optional[PosteriorTransform] = None,
         X_pending: Optional[Tensor] = None,
+        q_reduction: Optional[Callable[[Tensor, int], Tensor]] = torch.amax,
     ) -> None:
         r"""q-Upper Confidence Bound.
 
@@ -839,6 +864,10 @@ class qUpperConfidenceBound(SampleReducingMCAcquisitionFunction):
                 points that have been submitted for function evaluation but have not yet
                 been evaluated. Concatenated into X upon forward call. Copied and set to
                 have no gradient.
+            q_reduction: A callable that takes in a `sample_shape x batch_shape x q`
+                Tensor of acquisition utility values, a keyword-argument `dim` that
+                specifies the q dimension to reduce over (i.e. -1), and returns a
+                `sample_shape x batch_shape`-dim Tensor of acquisition values.
         """
         super().__init__(
             model=model,
@@ -846,6 +875,7 @@ class qUpperConfidenceBound(SampleReducingMCAcquisitionFunction):
             objective=objective,
             posterior_transform=posterior_transform,
             X_pending=X_pending,
+            q_reduction=q_reduction,
         )
         self.beta_prime = math.sqrt(beta * math.pi / 2)
 
