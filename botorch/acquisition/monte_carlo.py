@@ -678,7 +678,7 @@ class qProbabilityOfImprovement(SampleReducingMCAcquisitionFunction):
         tau: float = 1e-3,
         constraints: Optional[List[Callable[[Tensor], Tensor]]] = None,
         eta: Union[Tensor, float] = 1e-3,
-        q_reduction: Optional[Callable[[Tensor, int], Tensor]] = None,
+        q_reduction: Optional[Callable[[Tensor, int], Tensor]] = torch.prod,
     ) -> None:
         r"""q-Probability of Improvement.
 
