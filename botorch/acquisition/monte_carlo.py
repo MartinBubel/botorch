@@ -360,7 +360,7 @@ class qExpectedImprovement(SampleReducingMCAcquisitionFunction):
         X_pending: Optional[Tensor] = None,
         constraints: Optional[List[Callable[[Tensor], Tensor]]] = None,
         eta: Union[Tensor, float] = 1e-3,
-        q_reduction: Optional[Callable[[Tensor, int], Tensor]] = torch.prod,
+        q_reduction: Optional[Callable[[Tensor, int], Tensor]] = torch.amax,
     ) -> None:
         r"""q-Expected Improvement.
 
@@ -449,7 +449,7 @@ class qNoisyExpectedImprovement(
         constraints: Optional[List[Callable[[Tensor], Tensor]]] = None,
         eta: Union[Tensor, float] = 1e-3,
         marginalize_dim: Optional[int] = None,
-        q_reduction: Optional[Callable[[Tensor, int], Tensor]] = torch.prod,
+        q_reduction: Optional[Callable[[Tensor, int], Tensor]] = torch.amax,
     ) -> None:
         r"""q-Noisy Expected Improvement.
 
@@ -678,7 +678,7 @@ class qProbabilityOfImprovement(SampleReducingMCAcquisitionFunction):
         tau: float = 1e-3,
         constraints: Optional[List[Callable[[Tensor], Tensor]]] = None,
         eta: Union[Tensor, float] = 1e-3,
-        q_reduction: Optional[Callable[[Tensor, int], Tensor]] = torch.prod,
+        q_reduction: Optional[Callable[[Tensor, int], Tensor]] = torch.amax,
     ) -> None:
         r"""q-Probability of Improvement.
 
@@ -772,7 +772,7 @@ class qSimpleRegret(SampleReducingMCAcquisitionFunction):
         objective: Optional[MCAcquisitionObjective] = None,
         posterior_transform: Optional[PosteriorTransform] = None,
         X_pending: Optional[Tensor] = None,
-        q_reduction: Optional[Callable[[Tensor, int], Tensor]] = torch.prod,
+        q_reduction: Optional[Callable[[Tensor, int], Tensor]] = torch.amax,
     ) -> None:
         r"""q-Simple Regret.
 
